@@ -31,13 +31,13 @@ export class Sequence implements Timer {
 
     start(callback: TimerEventHandler): void {
         const t = this.innerTimers[this.current]
-        if (!t) return;
+        if (!t) return;                         // base case 1
 
         t.start(e => {
-            if (e.type === 'tick') callback(e)  // base case 1
+            if (e.type === 'tick') callback(e)  // base case 2
             if (e.type === 'done') {
                 if (this.current === this.innerTimers.length - 1) {
-                    callback(e)                 // base case 2
+                    callback(e)                 // base case 3
                 } else {
                     callback({ type: 'tick' })
                     this.current++
@@ -57,18 +57,20 @@ export class Loop implements Timer {
     private timesRemaining: number;
 
     constructor(times: number, innerTimer: Timer) {
-        this.duration = innerTimer.duration * times;
+        this.duration = innerTimer.duration * nonNegative(times);
         this.innerTimer = innerTimer
-        this.timesRemaining = times;
+        this.timesRemaining = nonNegative(times);
     }
 
     start(callback: TimerEventHandler) {
+        if (this.timesRemaining === 0) return;  // base case 1
+
         this.timesRemaining--;
         this.innerTimer.start(e => {
-            if (e.type === 'tick') callback(e)  // base case 1
+            if (e.type === 'tick') callback(e)  // base case 2
             if (e.type === 'done') {
                 if (this.timesRemaining === 0) {
-                    callback(e)                 // base case 2
+                    callback(e)                 // base case 3
                 } else {
                     callback({ type: 'tick' })
                     this.start(callback)
@@ -79,4 +81,10 @@ export class Loop implements Timer {
 
     pause() {}
     stop() {}
+}
+
+function nonNegative(x: number) {
+    return x >= 0
+        ? x
+        : 0;
 }

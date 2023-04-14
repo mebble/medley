@@ -66,16 +66,11 @@ describe('Sequence', () => {
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' })
     })
 
-    test('zero duration if no inner timer', () => {
-        const seq = new Sequence([]);
-
-        expect(seq.duration).eq(0);
-    })
-
     test('no inner timer', () => {
         const seq = new Sequence([]);
         const callback = vi.fn<[TimerEvent], void>();
 
+        expect(seq.duration).eq(0);
         expect(() => seq.start(callback)).not.toThrowError();
     })
 })
@@ -109,5 +104,33 @@ describe('Loop', () => {
         expect(callback).toHaveBeenNthCalledWith(3, { type: 'tick' });
         innerCallback({ type: 'done' })
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' });
+    })
+
+    test('loop with times zero', () => {
+        when(inner.duration).thenReturn(3);
+
+        const loop = new Loop(0, instance(inner));
+        expect(loop.duration).eq(0);
+
+        const callback = vi.fn<[TimerEvent], void>();
+
+        loop.start(callback)
+
+        expect(() => capture(inner.start).first())
+            .toThrowError('method has not been called')
+    })
+
+    test('loop with times negative', () => {
+        when(inner.duration).thenReturn(3);
+
+        const loop = new Loop(-1, instance(inner));
+        expect(loop.duration).eq(0);
+
+        const callback = vi.fn<[TimerEvent], void>();
+
+        loop.start(callback)
+
+        expect(() => capture(inner.start).first())
+            .toThrowError('method has not been called')
     })
 })
