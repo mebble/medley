@@ -2,7 +2,7 @@ import { test, expect, beforeEach, describe, vi } from 'vitest';
 import { mock, instance, capture, when } from 'ts-mockito';
 
 import { CoreTimer, Timer, TimerEvent } from './types';
-import { Sequence, Unit } from './timer';
+import { Loop, Sequence, Unit } from './timer';
 
 describe('Unit', () => {
     let inner: CoreTimer;
@@ -64,5 +64,37 @@ describe('Sequence', () => {
         expect(callback).toHaveBeenNthCalledWith(3, { type: 'tick' })
         inner2Callback({ type: 'done' })
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' })
+    })
+})
+
+describe('Loop', () => {
+    let inner: Timer;
+
+    beforeEach(() => {
+        inner = mock<Timer>();
+    })
+
+    test('duration is multiple of inner duration', () => {
+        when(inner.duration).thenReturn(3);
+
+        const loop = new Loop(2, instance(inner));
+        expect(loop.duration).eq(6);
+    })
+
+    test('calling inner timer', () => {
+        const loop = new Loop(2, instance(inner));
+        const callback = vi.fn<[TimerEvent], void>();
+
+        loop.start(callback);
+
+        const [innerCallback] = capture(inner.start).first()
+        innerCallback({ type: 'tick' })
+        expect(callback).toHaveBeenNthCalledWith(1, { type: 'tick' });
+        innerCallback({ type: 'done' })
+        expect(callback).toHaveBeenNthCalledWith(2, { type: 'tick' });
+        innerCallback({ type: 'tick' })
+        expect(callback).toHaveBeenNthCalledWith(3, { type: 'tick' });
+        innerCallback({ type: 'done' })
+        expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' });
     })
 })
