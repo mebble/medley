@@ -31,6 +31,8 @@ export class Sequence implements Timer {
 
     start(callback: TimerEventHandler): void {
         const t = this.innerTimers[this.current]
+        if (!t) return;
+
         t.start(e => {
             if (e.type === 'tick') callback(e)  // base case 1
             if (e.type === 'done') {

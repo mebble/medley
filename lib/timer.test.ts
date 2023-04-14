@@ -65,6 +65,19 @@ describe('Sequence', () => {
         inner2Callback({ type: 'done' })
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' })
     })
+
+    test('zero duration if no inner timer', () => {
+        const seq = new Sequence([]);
+
+        expect(seq.duration).eq(0);
+    })
+
+    test('no inner timer', () => {
+        const seq = new Sequence([]);
+        const callback = vi.fn<[TimerEvent], void>();
+
+        expect(() => seq.start(callback)).not.toThrowError();
+    })
 })
 
 describe('Loop', () => {
