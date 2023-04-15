@@ -23,6 +23,20 @@ describe('Unit', () => {
         expect(callback).toHaveBeenCalledWith(e)
     })
 
+    test('do nothing if already on', () => {
+        const unit = new Unit(10, instance(inner))
+        const callback = vi.fn<[TimerEvent], void>()
+
+        unit.start(callback)
+        expect(() => capture(inner.start).first())
+            .not
+            .toThrowError()
+
+        unit.start(callback)
+        expect(() => capture(inner.start).second())
+            .toThrowError('method has not been called')
+    })
+
     test('timer state on every callback call', () => {
         const unit = new Unit(10, instance(inner));
         const callback = vi.fn((e: TimerEvent) => {
@@ -85,6 +99,22 @@ describe('Sequence', () => {
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' })
     })
 
+    test('do nothing if already on', () => {
+        const seq = new Sequence([
+            instance(inner1)
+        ]);
+        const callback = vi.fn<[TimerEvent], void>()
+
+        seq.start(callback)
+        expect(() => capture(inner1.start).first())
+            .not
+            .toThrowError()
+
+        seq.start(callback)
+        expect(() => capture(inner1.start).second())
+            .toThrowError('method has not been called')
+    })
+
     test('timer state on every callback call', () => {
         const seq = new Sequence([
             instance(inner1)
@@ -144,6 +174,20 @@ describe('Loop', () => {
         expect(callback).toHaveBeenNthCalledWith(3, { type: 'tick' });
         innerCallback({ type: 'done' })
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' });
+    })
+
+    test('do nothing if already on', () => {
+        const loop = new Loop(5, instance(inner));
+        const callback = vi.fn<[TimerEvent], void>()
+
+        loop.start(callback)
+        expect(() => capture(inner.start).first())
+            .not
+            .toThrowError()
+
+        loop.start(callback)
+        expect(() => capture(inner.start).second())
+            .toThrowError('method has not been called')
     })
 
     test('timer state on every callback call', () => {

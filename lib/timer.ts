@@ -12,6 +12,8 @@ export class Unit implements Timer {
     }
 
     start(callback: TimerEventHandler) {
+        if (this._state === 'on') return;
+
         this._state = 'on'
         this.core.start(e => {
             if (e.type === 'done') {
@@ -42,6 +44,11 @@ export class Sequence implements Timer {
     }
 
     start(callback: TimerEventHandler): void {
+        if (this._state === 'on') return;
+        this._start(callback);
+    }
+
+    private _start(callback: TimerEventHandler) {
         this._state = 'on'
         const t = this.innerTimers[this.current]
         if (!t) return;                         // base case 1
@@ -55,7 +62,7 @@ export class Sequence implements Timer {
                 } else {
                     callback({ type: 'tick' })
                     this.current++
-                    this.start(callback)
+                    this._start(callback)
                 }
             }
         })
@@ -83,6 +90,11 @@ export class Loop implements Timer {
     }
 
     start(callback: TimerEventHandler) {
+        if (this._state === 'on') return;
+        this._start(callback)
+    }
+
+    private _start(callback: TimerEventHandler) {
         this._state = 'on'
         if (this.timesRemaining === 0) return;  // base case 1
 
@@ -95,7 +107,7 @@ export class Loop implements Timer {
                     callback(e)                 // base case 3
                 } else {
                     callback({ type: 'tick' })
-                    this.start(callback)
+                    this._start(callback)
                 }
             }
         })
