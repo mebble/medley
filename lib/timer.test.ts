@@ -55,6 +55,21 @@ describe('Unit', () => {
 
         expect.assertions(2)
     })
+
+    test('should be able to restart a timer that was done', () => {
+        const unit = new Unit(10, instance(inner))
+        const callback = vi.fn<[TimerEvent], void>()
+
+        unit.start(callback)
+        const [innerCallback1] = capture(inner.start).first()
+        innerCallback1({ type: 'tick' })
+        innerCallback1({ type: 'done' })
+
+        unit.start(callback)  // restart
+        expect(() => capture(inner.start).second())
+            .not
+            .toThrowError()
+    })
 });
 
 describe('Sequence', () => {
@@ -136,6 +151,27 @@ describe('Sequence', () => {
         expect.assertions(2)
     })
 
+    test('should be able to restart a timer that was done', () => {
+        const seq = new Sequence([
+            instance(inner1),
+            instance(inner2),                             // [required] more than one inner timer
+        ]);
+        const callback = vi.fn<[TimerEvent], void>()
+
+        seq.start(callback);
+        const [inner1Callback1] = capture(inner1.start).first()
+        inner1Callback1({ type: 'tick' })
+        inner1Callback1({ type: 'done' })
+        const [inner2Callback] = capture(inner2.start).first()
+        inner2Callback({ type: 'tick' })
+        inner2Callback({ type: 'done' })
+
+        seq.start(callback);  // restart
+        expect(() => capture(inner1.start).second())
+            .not
+            .toThrowError()
+    })
+
     test('no inner timer', () => {
         const seq = new Sequence([]);
         const callback = vi.fn<[TimerEvent], void>();
@@ -177,7 +213,7 @@ describe('Loop', () => {
     })
 
     test('do nothing if already on', () => {
-        const loop = new Loop(5, instance(inner));
+        const loop = new Loop(5, instance(inner));        // [required] times > 1
         const callback = vi.fn<[TimerEvent], void>()
 
         loop.start(callback)
@@ -207,6 +243,21 @@ describe('Loop', () => {
         innerCallback({ type: 'done' })
 
         expect.assertions(2)
+    })
+
+    test('should be able to restart a timer that was done', () => {
+        const loop = new Loop(1, instance(inner));
+        const callback = vi.fn<[TimerEvent], void>()
+
+        loop.start(callback);
+        const [innerCallback] = capture(inner.start).first()
+        innerCallback({ type: 'tick' })
+        innerCallback({ type: 'done' })
+
+        loop.start(callback);  // restart
+        expect(() => capture(inner.start).second())
+            .not
+            .toThrowError()
     })
 
     test('loop with times zero', () => {

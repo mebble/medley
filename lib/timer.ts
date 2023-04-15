@@ -45,6 +45,7 @@ export class Sequence implements Timer {
 
     start(callback: TimerEventHandler): void {
         if (this._state === 'on') return;
+        this.current = 0;
         this._start(callback);
     }
 
@@ -78,12 +79,14 @@ export class Sequence implements Timer {
 
 export class Loop implements Timer {
     public readonly duration: number;
+    private readonly times: number;
     private readonly innerTimer: Timer;
     private timesRemaining: number;
     private _state: TimerState;
 
     constructor(times: number, innerTimer: Timer) {
         this.duration = innerTimer.duration * nonNegative(times);
+        this.times = nonNegative(times);
         this.innerTimer = innerTimer
         this.timesRemaining = nonNegative(times);
         this._state = 'off';
@@ -91,6 +94,7 @@ export class Loop implements Timer {
 
     start(callback: TimerEventHandler) {
         if (this._state === 'on') return;
+        this.timesRemaining = this.times;
         this._start(callback)
     }
 
