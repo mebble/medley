@@ -18,9 +18,28 @@ describe('Unit', () => {
 
         unit.start(callback)
 
-        const [coreCallback] = capture(inner.start).first()
-        coreCallback(e)
+        const [innerCallback] = capture(inner.start).first()
+        innerCallback(e)
         expect(callback).toHaveBeenCalledWith(e)
+    })
+
+    test('timer state on every callback call', () => {
+        const unit = new Unit(10, instance(inner));
+        const callback = vi.fn((e: TimerEvent) => {
+            if (e.type === 'done') {
+                expect(unit.state()).toEqual('off')
+            } else if (e.type === 'tick') {
+                expect(unit.state()).toEqual('on')
+            }
+        });
+
+        unit.start(callback);
+
+        const [innerCallback] = capture(inner.start).first()
+        innerCallback({ type: 'tick' })
+        innerCallback({ type: 'done' })
+
+        expect.assertions(2)
     })
 });
 
@@ -66,6 +85,27 @@ describe('Sequence', () => {
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' })
     })
 
+    test('timer state on every callback call', () => {
+        const seq = new Sequence([
+            instance(inner1)
+        ]);
+        const callback = vi.fn((e: TimerEvent) => {
+            if (e.type === 'done') {
+                expect(seq.state()).toEqual('off')
+            } else if (e.type === 'tick') {
+                expect(seq.state()).toEqual('on')
+            }
+        });
+
+        seq.start(callback);
+
+        const [inner1Callback] = capture(inner1.start).first()
+        inner1Callback({ type: 'tick' })
+        inner1Callback({ type: 'done' })
+
+        expect.assertions(2)
+    })
+
     test('no inner timer', () => {
         const seq = new Sequence([]);
         const callback = vi.fn<[TimerEvent], void>();
@@ -104,6 +144,25 @@ describe('Loop', () => {
         expect(callback).toHaveBeenNthCalledWith(3, { type: 'tick' });
         innerCallback({ type: 'done' })
         expect(callback).toHaveBeenNthCalledWith(4, { type: 'done' });
+    })
+
+    test('timer state on every callback call', () => {
+        const loop = new Loop(1, instance(inner));
+        const callback = vi.fn((e: TimerEvent) => {
+            if (e.type === 'done') {
+                expect(loop.state()).toEqual('off')
+            } else if (e.type === 'tick') {
+                expect(loop.state()).toEqual('on')
+            }
+        });
+
+        loop.start(callback);
+
+        const [innerCallback] = capture(inner.start).first()
+        innerCallback({ type: 'tick' })
+        innerCallback({ type: 'done' })
+
+        expect.assertions(2)
     })
 
     test('loop with times zero', () => {
