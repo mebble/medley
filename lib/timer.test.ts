@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, describe, vi } from 'vitest';
-import { mock, instance, capture, when } from 'ts-mockito';
+import { mock, instance, capture, when, verify, anything } from 'ts-mockito';
 
 import { CoreTimer, Timer, TimerEvent } from './types';
 import { Loop, Sequence, Unit } from './timer';
@@ -28,13 +28,10 @@ describe('Unit', () => {
         const callback = vi.fn<[TimerEvent], void>()
 
         unit.start(callback)
-        expect(() => capture(inner.start).first())
-            .not
-            .toThrowError()
+        verify(inner.start(anything())).once()
 
         unit.start(callback)
-        expect(() => capture(inner.start).second())
-            .toThrowError('method has not been called')
+        verify(inner.start(anything())).once()
     })
 
     test('timer state on every callback call', () => {
@@ -66,9 +63,7 @@ describe('Unit', () => {
         innerCallback1({ type: 'done' })
 
         unit.start(callback)  // restart
-        expect(() => capture(inner.start).second())
-            .not
-            .toThrowError()
+        verify(inner.start(anything())).twice()
     })
 });
 
@@ -121,13 +116,10 @@ describe('Sequence', () => {
         const callback = vi.fn<[TimerEvent], void>()
 
         seq.start(callback)
-        expect(() => capture(inner1.start).first())
-            .not
-            .toThrowError()
+        verify(inner1.start(anything())).once()
 
         seq.start(callback)
-        expect(() => capture(inner1.start).second())
-            .toThrowError('method has not been called')
+        verify(inner1.start(anything())).once()
     })
 
     test('timer state on every callback call', () => {
@@ -167,9 +159,7 @@ describe('Sequence', () => {
         inner2Callback({ type: 'done' })
 
         seq.start(callback);  // restart
-        expect(() => capture(inner1.start).second())
-            .not
-            .toThrowError()
+        verify(inner1.start(anything())).twice()
     })
 
     test('no inner timer', () => {
@@ -217,13 +207,10 @@ describe('Loop', () => {
         const callback = vi.fn<[TimerEvent], void>()
 
         loop.start(callback)
-        expect(() => capture(inner.start).first())
-            .not
-            .toThrowError()
+        verify(inner.start(anything())).once()
 
         loop.start(callback)
-        expect(() => capture(inner.start).second())
-            .toThrowError('method has not been called')
+        verify(inner.start(anything())).once()
     })
 
     test('timer state on every callback call', () => {
@@ -255,9 +242,7 @@ describe('Loop', () => {
         innerCallback({ type: 'done' })
 
         loop.start(callback);  // restart
-        expect(() => capture(inner.start).second())
-            .not
-            .toThrowError()
+        verify(inner.start(anything())).twice()
     })
 
     test('loop with times zero', () => {
@@ -270,8 +255,7 @@ describe('Loop', () => {
 
         loop.start(callback)
 
-        expect(() => capture(inner.start).first())
-            .toThrowError('method has not been called')
+        verify(inner.start(anything())).never();
     })
 
     test('loop with times negative', () => {
@@ -284,7 +268,6 @@ describe('Loop', () => {
 
         loop.start(callback)
 
-        expect(() => capture(inner.start).first())
-            .toThrowError('method has not been called')
+        verify(inner.start(anything())).never();
     })
 })
