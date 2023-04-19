@@ -1,11 +1,11 @@
-import { CoreTimer, Timer, TimerEventHandler, TimerState } from "./types";
+import { TimeIt, Timer, TimerEventHandler, TimerState } from "./types";
 
 export class Unit implements Timer {
     public readonly duration: number;
-    private readonly core: CoreTimer;
+    private readonly core: TimeIt;
     private _state: TimerState;
 
-    constructor(duration: number, core: CoreTimer) {
+    constructor(duration: number, core: TimeIt) {
         this.duration = duration;
         this.core = core;
         this._state = 'off';
@@ -15,7 +15,7 @@ export class Unit implements Timer {
         if (this._state === 'on') return;
 
         this._state = 'on'
-        this.core.start(e => {
+        this.core(this.duration, e => {
             if (e.type === 'done') {
                 this._state = 'off'
             }

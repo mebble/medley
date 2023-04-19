@@ -15,5 +15,6 @@ yarn install
 
 ```
 yarn test
+yarn test --reporter verbose
 yarn test:watch
 ```

@@ -1,10 +1,10 @@
 export type TimerEvent =
     | { type: 'tick' }
     | { type: 'done' }
+
 export type TimerEventHandler = (event: TimerEvent) => void;
 
-export interface CoreTimer {
-    start(onEvent: TimerEventHandler): void;
+export type TimeIt = (duration: number, onEvent: TimerEventHandler) => {
     stop(): void;
 }
 

@@ -1,41 +1,41 @@
-import { test, expect, beforeEach, describe, vi } from 'vitest';
+import { test, expect, beforeEach, describe, vi, Mock } from 'vitest';
 import { mock, instance, capture, when, verify, anything } from 'ts-mockito';
 
-import { CoreTimer, Timer, TimerEvent } from './types';
+import { TimeIt, Timer, TimerEvent } from './types';
 import { Loop, Sequence, Unit } from './timer';
 
 describe('Unit', () => {
-    let inner: CoreTimer;
+    let inner: Mock<Parameters<TimeIt>, ReturnType<TimeIt>>;
 
     beforeEach(() => {
-        inner = mock<CoreTimer>()
+        inner = vi.fn()
     })
 
     test('calling inner timer', () => {
-        const unit = new Unit(10, instance(inner))
+        const unit = new Unit(10, inner)
         const callback = vi.fn<[TimerEvent], void>()
         const e: TimerEvent = { type: 'tick' }
 
         unit.start(callback)
 
-        const [innerCallback] = capture(inner.start).first()
+        const [,innerCallback] = inner.mock.lastCall!
         innerCallback(e)
         expect(callback).toHaveBeenCalledWith(e)
     })
 
     test('do nothing if already on', () => {
-        const unit = new Unit(10, instance(inner))
+        const unit = new Unit(10, inner)
         const callback = vi.fn<[TimerEvent], void>()
 
         unit.start(callback)
-        verify(inner.start(anything())).once()
+        expect(inner).toHaveBeenCalledTimes(1)
 
         unit.start(callback)
-        verify(inner.start(anything())).once()
+        expect(inner).toHaveBeenCalledTimes(1)
     })
 
     test('timer state on every callback call', () => {
-        const unit = new Unit(10, instance(inner));
+        const unit = new Unit(10, inner);
         const callback = vi.fn((e: TimerEvent) => {
             if (e.type === 'done') {
                 expect(unit.state()).toEqual('off')
@@ -46,7 +46,7 @@ describe('Unit', () => {
 
         unit.start(callback);
 
-        const [innerCallback] = capture(inner.start).first()
+        const [,innerCallback] = inner.mock.lastCall!
         innerCallback({ type: 'tick' })
         innerCallback({ type: 'done' })
 
@@ -54,16 +54,16 @@ describe('Unit', () => {
     })
 
     test('should be able to restart a timer that was done', () => {
-        const unit = new Unit(10, instance(inner))
+        const unit = new Unit(10, inner)
         const callback = vi.fn<[TimerEvent], void>()
 
         unit.start(callback)
-        const [innerCallback1] = capture(inner.start).first()
+        const [,innerCallback1] = inner.mock.lastCall!
         innerCallback1({ type: 'tick' })
         innerCallback1({ type: 'done' })
 
         unit.start(callback)  // restart
-        verify(inner.start(anything())).twice()
+        expect(inner).toHaveBeenCalledTimes(2)
     })
 });
 
