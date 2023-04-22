@@ -1,6 +1,6 @@
-import { TimeIt, TimerEventHandler } from "./types";
+import { TimeIt } from "./types";
 
-export const webApiCountdown: TimeIt = (duration: number, onEvent: TimerEventHandler) => {
+export const webApiCountdown: TimeIt = (duration, onEvent) => {
     /**
      * https://gist.github.com/jakearchibald/cb03f15670817001b1157e62a076fe95
      */
@@ -13,7 +13,7 @@ export const webApiCountdown: TimeIt = (duration: number, onEvent: TimerEventHan
     function frame() {
         elapsed++;
         if (elapsed < duration) {
-            onEvent({ type: 'tick' });
+            onEvent({ type: 'tick', remaining: duration - elapsed });
             scheduleFrame(performance.now());
         } else {
             clearTimeout(timeoutId)

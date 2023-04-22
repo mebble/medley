@@ -1,12 +1,22 @@
-export type TimerEvent =
-    | { type: 'tick' }
+type CoreTimerEvent =
+    | { type: 'tick', remaining: number }
     | { type: 'done' }
 
-export type TimerEventHandler = (event: TimerEvent) => void;
+export type CoreTimerEventHandler = (event: CoreTimerEvent) => void;
 
-export type TimeIt = (duration: number, onEvent: TimerEventHandler) => {
+export type TimeIt = (duration: number, onEvent: CoreTimerEventHandler) => {
     stop(): void;
 }
+
+type UnitEvent =
+    | { type: 'tick', id: string, remaining: number }
+    | { type: 'done', id: string }
+
+export type TimerEvent =
+    | { type: 'tick', target: UnitEvent }
+    | { type: 'done', id: string }
+
+export type TimerEventHandler = (event: TimerEvent) => void;
 
 export type TimerState = 'off' | 'on';
 

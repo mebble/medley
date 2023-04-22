@@ -2,10 +2,12 @@ import { TimeIt, Timer, TimerEventHandler, TimerState } from "./types";
 
 export class Unit implements Timer {
     public readonly duration: number;
+    private readonly id: string;
     private readonly core: TimeIt;
     private _state: TimerState;
 
-    constructor(duration: number, core: TimeIt) {
+    constructor(id: string, duration: number, core: TimeIt) {
+        this.id = id;
         this.duration = duration;
         this.core = core;
         this._state = 'off';
@@ -18,8 +20,10 @@ export class Unit implements Timer {
         this.core(this.duration, e => {
             if (e.type === 'done') {
                 this._state = 'off'
+                callback({ ...e, id: this.id })
+            } else {
+                callback({ type: 'tick', target: { ...e, id: this.id } })
             }
-            callback(e)
         })
     }
 
@@ -61,7 +65,7 @@ export class Sequence implements Timer {
                     this._state = 'off'
                     callback(e)                 // base case 3
                 } else {
-                    callback({ type: 'tick' })
+                    callback({ type: 'tick', target: e })
                     this.current++
                     this._start(callback)
                 }
@@ -110,7 +114,7 @@ export class Loop implements Timer {
                     this._state = 'off'
                     callback(e)                 // base case 3
                 } else {
-                    callback({ type: 'tick' })
+                    callback({ type: 'tick', target: e })
                     this._start(callback)
                 }
             }
