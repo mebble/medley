@@ -1,19 +1,22 @@
 import { test, expect, beforeEach, describe, vi, Mock } from 'vitest';
 import { mock, instance, capture, when, verify, anything, anyString, anyNumber } from 'ts-mockito';
 
-import { TimeIt, Timer, TimerEvent } from './types';
+import { TimeIt, Timer, TimerEventHandler } from './types';
 import { Loop, Sequence, Unit } from './timer';
+
+type MockTimerEventHandler = Mock<Parameters<TimerEventHandler>, ReturnType<TimerEventHandler>>;
 
 describe('Unit', () => {
     let inner: Mock<Parameters<TimeIt>, ReturnType<TimeIt>>;
+    let callback: MockTimerEventHandler;
 
     beforeEach(() => {
         inner = vi.fn()
+        callback = vi.fn()
     })
 
     test('on tick, will call callback with target', () => {
         const unit = new Unit('u', 10, inner)
-        const callback = vi.fn<[TimerEvent], void>()
 
         unit.start(callback)
 
@@ -22,20 +25,9 @@ describe('Unit', () => {
         expect(callback).toHaveBeenCalledWith({ type: 'tick', target: { type: 'tick', remaining: 1, id: 'u' } })
     })
 
-    test('do nothing if already on', () => {
-        const unit = new Unit('u', 10, inner)
-        const callback = vi.fn<[TimerEvent], void>()
-
-        unit.start(callback)
-        expect(inner).toHaveBeenCalledTimes(1)
-
-        unit.start(callback)
-        expect(inner).toHaveBeenCalledTimes(1)
-    })
-
     test('timer state on every callback call', () => {
         const unit = new Unit('u', 10, inner);
-        const callback = vi.fn((e: TimerEvent) => {
+        callback = vi.fn(e => {
             if (e.type === 'done') {
                 expect(unit.state()).toEqual('off')
             } else if (e.type === 'tick') {
@@ -52,9 +44,18 @@ describe('Unit', () => {
         expect.assertions(2)
     })
 
+    test('do nothing if timer already on', () => {
+        const unit = new Unit('u', 10, inner)
+
+        unit.start(callback)
+        expect(inner).toHaveBeenCalledTimes(1)
+
+        unit.start(callback)
+        expect(inner).toHaveBeenCalledTimes(1)
+    })
+
     test('should be able to restart a timer that was done', () => {
         const unit = new Unit('u', 10, inner)
-        const callback = vi.fn<[TimerEvent], void>()
 
         unit.start(callback)
         const [,innerCallback1] = inner.mock.lastCall!
@@ -69,10 +70,12 @@ describe('Unit', () => {
 describe('Sequence', () => {
     let inner1: Timer;
     let inner2: Timer;
+    let callback: MockTimerEventHandler;
 
     beforeEach(() => {
         inner1 = mock<Timer>();
         inner2 = mock<Timer>();
+        callback = vi.fn();
     })
 
     test('duration is sum of inner durations', () => {
@@ -91,7 +94,6 @@ describe('Sequence', () => {
             instance(inner1),
             instance(inner2)
         ]);
-        const callback = vi.fn<[TimerEvent], void>();
 
         seq.start(callback);
 
@@ -108,24 +110,11 @@ describe('Sequence', () => {
         expect(callback).toHaveBeenNthCalledWith(4, expect.objectContaining({ type: 'done' }))
     })
 
-    test('do nothing if already on', () => {
-        const seq = new Sequence([
-            instance(inner1)
-        ]);
-        const callback = vi.fn<[TimerEvent], void>()
-
-        seq.start(callback)
-        verify(inner1.start(anything())).once()
-
-        seq.start(callback)
-        verify(inner1.start(anything())).once()
-    })
-
     test('timer state on every callback call', () => {
         const seq = new Sequence([
             instance(inner1)
         ]);
-        const callback = vi.fn((e: TimerEvent) => {
+        callback = vi.fn(e => {
             if (e.type === 'done') {
                 expect(seq.state()).toEqual('off')
             } else if (e.type === 'tick') {
@@ -142,12 +131,23 @@ describe('Sequence', () => {
         expect.assertions(2)
     })
 
+    test('do nothing if timer already on', () => {
+        const seq = new Sequence([
+            instance(inner1)
+        ]);
+
+        seq.start(callback)
+        verify(inner1.start(anything())).once()
+
+        seq.start(callback)
+        verify(inner1.start(anything())).once()
+    })
+
     test('should be able to restart a timer that was done', () => {
         const seq = new Sequence([
             instance(inner1),
             instance(inner2),                             // [required] more than one inner timer
         ]);
-        const callback = vi.fn<[TimerEvent], void>()
 
         seq.start(callback);
         const [inner1Callback1] = capture(inner1.start).first()
@@ -163,7 +163,6 @@ describe('Sequence', () => {
 
     test('no inner timer', () => {
         const seq = new Sequence([]);
-        const callback = vi.fn<[TimerEvent], void>();
 
         expect(seq.duration).eq(0);
         expect(() => seq.start(callback)).not.toThrowError();
@@ -172,9 +171,11 @@ describe('Sequence', () => {
 
 describe('Loop', () => {
     let inner: Timer;
+    let callback: MockTimerEventHandler;
 
     beforeEach(() => {
         inner = mock<Timer>();
+        callback = vi.fn();
     })
 
     test('duration is multiple of inner duration', () => {
@@ -186,7 +187,6 @@ describe('Loop', () => {
 
     test('calling inner timer in a loop', () => {
         const loop = new Loop(2, instance(inner));
-        const callback = vi.fn<[TimerEvent], void>();
 
         loop.start(callback);
 
@@ -201,20 +201,9 @@ describe('Loop', () => {
         expect(callback).toHaveBeenNthCalledWith(4, expect.objectContaining({ type: 'done' }));
     })
 
-    test('do nothing if already on', () => {
-        const loop = new Loop(5, instance(inner));        // [required] times > 1
-        const callback = vi.fn<[TimerEvent], void>()
-
-        loop.start(callback)
-        verify(inner.start(anything())).once()
-
-        loop.start(callback)
-        verify(inner.start(anything())).once()
-    })
-
     test('timer state on every callback call', () => {
         const loop = new Loop(1, instance(inner));
-        const callback = vi.fn((e: TimerEvent) => {
+        callback = vi.fn(e => {
             if (e.type === 'done') {
                 expect(loop.state()).toEqual('off')
             } else if (e.type === 'tick') {
@@ -231,9 +220,18 @@ describe('Loop', () => {
         expect.assertions(2)
     })
 
+    test('do nothing if timer already on', () => {
+        const loop = new Loop(5, instance(inner));        // [required] times > 1
+
+        loop.start(callback)
+        verify(inner.start(anything())).once()
+
+        loop.start(callback)
+        verify(inner.start(anything())).once()
+    })
+
     test('should be able to restart a timer that was done', () => {
         const loop = new Loop(1, instance(inner));
-        const callback = vi.fn<[TimerEvent], void>()
 
         loop.start(callback);
         const [innerCallback] = capture(inner.start).first()
@@ -250,8 +248,6 @@ describe('Loop', () => {
         const loop = new Loop(0, instance(inner));
         expect(loop.duration).eq(0);
 
-        const callback = vi.fn<[TimerEvent], void>();
-
         loop.start(callback)
 
         verify(inner.start(anything())).never();
@@ -262,8 +258,6 @@ describe('Loop', () => {
 
         const loop = new Loop(-1, instance(inner));
         expect(loop.duration).eq(0);
-
-        const callback = vi.fn<[TimerEvent], void>();
 
         loop.start(callback)
 

@@ -12,7 +12,7 @@ type UnitEvent =
     | { type: 'tick', id: string, remaining: number }
     | { type: 'done', id: string }
 
-export type TimerEvent =
+type TimerEvent =
     | { type: 'tick', target: UnitEvent }
     | { type: 'done', id: string }
 
