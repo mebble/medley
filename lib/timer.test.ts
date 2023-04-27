@@ -1,7 +1,7 @@
 import { test, expect, beforeEach, describe, vi, Mock } from 'vitest';
-import { mock, instance, capture, when, verify, anything, anyString, anyNumber } from 'ts-mockito';
+import { mock, instance, capture, when, verify, anything, anyNumber } from 'ts-mockito';
 
-import { TimeIt, Timer, TimerEventHandler } from './types';
+import { TimeIt, Timer, TimerEventHandler, FragmentState } from './types';
 import { Loop, Sequence, Unit } from './timer';
 
 type MockTimerEventHandler = Mock<Parameters<TimerEventHandler>, ReturnType<TimerEventHandler>>;
@@ -25,13 +25,13 @@ describe('Unit', () => {
         expect(callback).toHaveBeenCalledWith({ type: 'tick', target: { type: 'tick', remaining: 1, id: 'u' } })
     })
 
-    test('timer state on every callback call', () => {
+    test('timer status on every callback call', () => {
         const unit = new Unit('u', 10, inner);
         callback = vi.fn(e => {
             if (e.type === 'done') {
-                expect(unit.state()).toEqual('off')
+                expect(unit.state().status).toEqual('off')
             } else if (e.type === 'tick') {
-                expect(unit.state()).toEqual('on')
+                expect(unit.state().status).toEqual('on')
             }
         });
 
@@ -68,13 +68,13 @@ describe('Unit', () => {
 });
 
 describe('Sequence', () => {
-    let inner1: Timer;
-    let inner2: Timer;
+    let inner1: Timer<FragmentState>;
+    let inner2: Timer<FragmentState>;
     let callback: MockTimerEventHandler;
 
     beforeEach(() => {
-        inner1 = mock<Timer>();
-        inner2 = mock<Timer>();
+        inner1 = mock();
+        inner2 = mock();
         callback = vi.fn();
     })
 
@@ -100,25 +100,25 @@ describe('Sequence', () => {
         const [inner1Callback] = capture(inner1.start).first()
         inner1Callback({ type: 'tick', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(1, expect.objectContaining({ type: 'tick' }))
-        inner1Callback({ type: 'done', id: anyString() })
+        inner1Callback({ type: 'done', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(2, expect.objectContaining({ type: 'tick' }))
 
         const [inner2Callback] = capture(inner2.start).first()
         inner2Callback({ type: 'tick', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(3, expect.objectContaining({ type: 'tick' }))
-        inner2Callback({ type: 'done', id: anyString() })
+        inner2Callback({ type: 'done', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(4, expect.objectContaining({ type: 'done' }))
     })
 
-    test('timer state on every callback call', () => {
+    test('timer status on every callback call', () => {
         const seq = new Sequence([
             instance(inner1)
         ]);
         callback = vi.fn(e => {
             if (e.type === 'done') {
-                expect(seq.state()).toEqual('off')
+                expect(seq.state().status).toEqual('off')
             } else if (e.type === 'tick') {
-                expect(seq.state()).toEqual('on')
+                expect(seq.state().status).toEqual('on')
             }
         });
 
@@ -126,7 +126,7 @@ describe('Sequence', () => {
 
         const [inner1Callback] = capture(inner1.start).first()
         inner1Callback({ type: 'tick', target: anything() })
-        inner1Callback({ type: 'done', id: anyString() })
+        inner1Callback({ type: 'done', target: anything() })
 
         expect.assertions(2)
     })
@@ -152,10 +152,10 @@ describe('Sequence', () => {
         seq.start(callback);
         const [inner1Callback1] = capture(inner1.start).first()
         inner1Callback1({ type: 'tick', target: anything() })
-        inner1Callback1({ type: 'done', id: anyString() })
+        inner1Callback1({ type: 'done', target: anything() })
         const [inner2Callback] = capture(inner2.start).first()
         inner2Callback({ type: 'tick', target: anything() })
-        inner2Callback({ type: 'done', id: anyString() })
+        inner2Callback({ type: 'done', target: anything() })
 
         seq.start(callback);  // restart
         verify(inner1.start(anything())).twice()
@@ -170,11 +170,11 @@ describe('Sequence', () => {
 })
 
 describe('Loop', () => {
-    let inner: Timer;
+    let inner: Timer<FragmentState>;
     let callback: MockTimerEventHandler;
 
     beforeEach(() => {
-        inner = mock<Timer>();
+        inner = mock();
         callback = vi.fn();
     })
 
@@ -193,21 +193,21 @@ describe('Loop', () => {
         const [innerCallback] = capture(inner.start).first()
         innerCallback({ type: 'tick', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(1, expect.objectContaining({ type: 'tick' }));
-        innerCallback({ type: 'done', id: anyString() })
+        innerCallback({ type: 'done', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(2, expect.objectContaining({ type: 'tick' }));
         innerCallback({ type: 'tick', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(3, expect.objectContaining({ type: 'tick' }));
-        innerCallback({ type: 'done', id: anyString() })
+        innerCallback({ type: 'done', target: anything() })
         expect(callback).toHaveBeenNthCalledWith(4, expect.objectContaining({ type: 'done' }));
     })
 
-    test('timer state on every callback call', () => {
+    test('timer status on every callback call', () => {
         const loop = new Loop(1, instance(inner));
         callback = vi.fn(e => {
             if (e.type === 'done') {
-                expect(loop.state()).toEqual('off')
+                expect(loop.state().status).toEqual('off')
             } else if (e.type === 'tick') {
-                expect(loop.state()).toEqual('on')
+                expect(loop.state().status).toEqual('on')
             }
         });
 
@@ -215,7 +215,7 @@ describe('Loop', () => {
 
         const [innerCallback] = capture(inner.start).first()
         innerCallback({ type: 'tick', target: anything() })
-        innerCallback({ type: 'done', id: anyString() })
+        innerCallback({ type: 'done', target: anything() })
 
         expect.assertions(2)
     })
@@ -236,7 +236,7 @@ describe('Loop', () => {
         loop.start(callback);
         const [innerCallback] = capture(inner.start).first()
         innerCallback({ type: 'tick', target: anything() })
-        innerCallback({ type: 'done', id: anyString() })
+        innerCallback({ type: 'done', target: anything() })
 
         loop.start(callback);  // restart
         verify(inner.start(anything())).twice()
