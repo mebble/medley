@@ -10,5 +10,9 @@ const u4 = new Unit('u4', 3, webApiCountdown)
 const seq = new Sequence([u1, u2, loop, u4])
 
 seq.start(e => {
-    console.log(JSON.stringify(e, null, 2))
+    const ee = {
+        ...e,
+        tree: seq.state()
+    };
+    console.log(JSON.stringify(ee, null, 2))
 })

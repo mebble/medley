@@ -38,3 +38,13 @@ export interface Timer<TState extends FragmentState> {
     stop(): void;
     pause(): void;
 }
+
+export type Config = {
+    name: string,
+    segments: SegmentConfig,
+}
+
+type UnitConfig     = { type: 'unit',     name: string, duration: number, tags: string[] }
+type SequenceConfig = { type: 'sequence', tags: string[], inners: SegmentConfig[] }
+type LoopConfig     = { type: 'loop',     times: number, tags: string[], inner: SegmentConfig }
+export type SegmentConfig  = UnitConfig | SequenceConfig | LoopConfig
