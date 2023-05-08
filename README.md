@@ -1,6 +1,6 @@
 # medley
 
-[![CI Status](https://github.com/mebble/medley/actions/workflows/ci/badge.svg)](https://github.com/mebble/medley/actions)
+[![CI Status](https://github.com/mebble/medley/workflows/CI/badge.svg)](https://github.com/mebble/medley/actions)
 
 _Scafolded with `yarn create vite medley --template vanilla-ts`_
 
