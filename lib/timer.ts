@@ -1,4 +1,5 @@
-import { LoopState, SequenceState, TimeIt, Timer, TimerEventHandler, TimerStatus, FragmentState, UnitState } from "./types";
+import { TimeIt } from "./core";
+import { LoopState, SequenceState, Timer, TimerEventHandler, TimerStatus, TimerState, UnitState } from "./types";
 
 export class Unit implements Timer<UnitState> {
     public readonly duration: number;
@@ -51,11 +52,11 @@ export class Unit implements Timer<UnitState> {
 
 export class Sequence implements Timer<SequenceState> {
     public readonly duration: number;
-    private readonly innerTimers: Timer<FragmentState>[];
+    private readonly innerTimers: Timer<TimerState>[];
     private current: number = 0;
     private status: TimerStatus;
 
-    constructor(innerTimers: Timer<FragmentState>[]) {
+    constructor(innerTimers: Timer<TimerState>[]) {
         this.innerTimers = innerTimers;
         this.duration = this.innerTimers.reduce((totalDuration, t) => totalDuration + t.duration, 0);
         this.status = 'off';
@@ -108,11 +109,11 @@ export class Sequence implements Timer<SequenceState> {
 export class Loop implements Timer<LoopState> {
     public readonly duration: number;
     private readonly times: number;
-    private readonly innerTimer: Timer<FragmentState>;
+    private readonly innerTimer: Timer<TimerState>;
     private timesRemaining: number;
     private status: TimerStatus;
 
-    constructor(times: number, innerTimer: Timer<FragmentState>) {
+    constructor(times: number, innerTimer: Timer<TimerState>) {
         this.duration = innerTimer.duration * nonNegative(times);
         this.times = nonNegative(times);
         this.innerTimer = innerTimer

@@ -1,7 +1,8 @@
 import { describe, test, expect, beforeEach, Mock, vi } from 'vitest';
-import { SegmentConfig, TimeIt } from './types';
+import { TimerConfig } from './types';
 import { createTimer } from './activate';
 import { Sequence, Unit, Loop } from './timer';
+import { TimeIt } from './core';
 
 describe('createTimer', () => {
     let coreTimer: Mock<Parameters<TimeIt>, ReturnType<TimeIt>>;
@@ -11,7 +12,7 @@ describe('createTimer', () => {
     })
 
     test('creates the appropriate Timers from a config', () => {
-        const config: SegmentConfig = {
+        const config: TimerConfig = {
             type: 'sequence',
             tags: [],
             inners: [

@@ -1,7 +1,6 @@
 import { test, expect, describe, vi, beforeEach, Mock } from 'vitest';
 
-import { CoreTimerEventHandler } from './types';
-import { webApiCountdown } from './core';
+import { CoreTimerEventHandler, webApiCountdown } from './core';
 
 describe('webApiCountdown', () => {
     let callback: Mock<Parameters<CoreTimerEventHandler>, ReturnType<CoreTimerEventHandler>>;

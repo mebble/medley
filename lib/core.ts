@@ -1,4 +1,12 @@
-import { TimeIt } from "./types";
+type CoreTimerEvent =
+    | { type: 'tick', remaining: number }
+    | { type: 'done' }
+
+export type CoreTimerEventHandler = (event: CoreTimerEvent) => void;
+
+export type TimeIt = (duration: number, onEvent: CoreTimerEventHandler) => {
+    stop(): void;
+}
 
 export const webApiCountdown: TimeIt = (duration, onEvent) => {
     /**

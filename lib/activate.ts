@@ -1,7 +1,8 @@
+import { TimeIt } from "./core";
 import { Unit, Loop, Sequence } from "./timer";
-import { SegmentConfig, FragmentState, Timer, TimeIt } from "./types";
+import { TimerConfig, TimerState, Timer, MedleyEvent, MedleyConfig } from "./types";
 
-export const createTimer = (config: SegmentConfig, timeIt: TimeIt): Timer<FragmentState> => {
+export const createTimer = (config: TimerConfig, timeIt: TimeIt): Timer<TimerState> => {
     switch (config.type) {
         case 'unit':
             return new Unit(config.name, config.duration, timeIt);
@@ -13,4 +14,16 @@ export const createTimer = (config: SegmentConfig, timeIt: TimeIt): Timer<Fragme
             const _exhaust: never = config;
             return _exhaust;
     }
+}
+
+type MedleyHandler = (e: MedleyEvent) => void
+
+export const startTimer = (config: MedleyConfig, timeIt: TimeIt, callback: MedleyHandler): void => {
+    const timer = createTimer(config.timer, timeIt);
+    timer.start(e => {
+        callback({
+            ...e,
+            state: timer.state()
+        })
+    });
 }

@@ -1,8 +1,9 @@
 import { test, expect, beforeEach, describe, vi, Mock } from 'vitest';
 import { mock, instance, capture, when, verify, anything, anyNumber } from 'ts-mockito';
 
-import { TimeIt, Timer, TimerEventHandler, FragmentState } from './types';
+import { Timer, TimerEventHandler, TimerState } from './types';
 import { Loop, Sequence, Unit } from './timer';
+import { TimeIt } from './core';
 
 type MockTimerEventHandler = Mock<Parameters<TimerEventHandler>, ReturnType<TimerEventHandler>>;
 
@@ -68,8 +69,8 @@ describe('Unit', () => {
 });
 
 describe('Sequence', () => {
-    let inner1: Timer<FragmentState>;
-    let inner2: Timer<FragmentState>;
+    let inner1: Timer<TimerState>;
+    let inner2: Timer<TimerState>;
     let callback: MockTimerEventHandler;
 
     beforeEach(() => {
@@ -170,7 +171,7 @@ describe('Sequence', () => {
 })
 
 describe('Loop', () => {
-    let inner: Timer<FragmentState>;
+    let inner: Timer<TimerState>;
     let callback: MockTimerEventHandler;
 
     beforeEach(() => {
