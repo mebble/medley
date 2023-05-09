@@ -1,6 +1,6 @@
 import { TimeIt } from "./core";
 import { Unit, Loop, Sequence } from "./timer";
-import { TimerConfig, TimerState, Timer, MedleyEvent, MedleyConfig } from "./types";
+import { TimerConfig, TimerState, Timer } from "./types";
 
 export const createTimer = (config: TimerConfig, timeIt: TimeIt): Timer<TimerState> => {
     switch (config.type) {
@@ -14,16 +14,4 @@ export const createTimer = (config: TimerConfig, timeIt: TimeIt): Timer<TimerSta
             const _exhaust: never = config;
             return _exhaust;
     }
-}
-
-type MedleyHandler = (e: MedleyEvent) => void
-
-export const startTimer = (config: MedleyConfig, timeIt: TimeIt, callback: MedleyHandler): void => {
-    const timer = createTimer(config.timer, timeIt);
-    timer.start(e => {
-        callback({
-            ...e,
-            state: timer.state()
-        })
-    });
 }

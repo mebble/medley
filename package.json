@@ -1,8 +1,17 @@
 {
   "name": "medley",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "main": "./dist/medley.umd.cjs",
+  "module": "./dist/medley.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/medley.js",
+      "require": "./dist/medley.umd.cjs"
+    }
+  },
+  "files": ["dist"],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -14,6 +23,12 @@
     "ts-mockito": "^2.6.1",
     "typescript": "^4.9.3",
     "vite": "^4.2.0",
+    "vite-plugin-dts": "^2.3.0",
     "vitest": "^0.30.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mebble/medley.git"
+  },
+  "author": "Neil Syiemlieh"
 }
