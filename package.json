@@ -1,6 +1,6 @@
 {
   "name": "@mebble/medley",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "main": "./dist/medley.umd.cjs",
   "module": "./dist/medley.js",
