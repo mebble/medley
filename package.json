@@ -1,6 +1,6 @@
 {
   "name": "@mebble/medley",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "type": "module",
   "main": "./dist/medley.umd.cjs",
   "module": "./dist/medley.js",
@@ -11,7 +11,9 @@
       "require": "./dist/medley.umd.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

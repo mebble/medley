@@ -1,5 +1,5 @@
-import { webApiCountdown } from "./core";
-import { Unit, Sequence, Loop } from "./timer";
+import { webApiCountdown } from "../lib/core";
+import { Unit, Sequence, Loop } from "../lib/timer";
 
 const u1 = new Unit('u1', 5, webApiCountdown)
 const u2 = new Unit('u2', 2, webApiCountdown)

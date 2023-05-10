@@ -1,19 +1,22 @@
 # medley
 
 [![CI Status](https://github.com/mebble/medley/workflows/CI/badge.svg)](https://github.com/mebble/medley/actions)
+[![NPM](https://img.shields.io/npm/v/@mebble/medley?logo=npm&labelColor=000&color=555)](https://www.npmjs.com/package/@mebble/medley)
 
-_Scafolded with `yarn create vite medley --template vanilla-ts`_
+## Installation
 
-## Dev
-
-```
-yarn install
-```
-
-### Test
+Use any one of the following package managers:
 
 ```
-yarn test
-yarn test --reporter verbose
-yarn test:watch
+npm install @mebble/medley
+yarn add @mebble/medley
+pnpm add @mebble/medley
 ```
+
+## Usage
+
+## API Reference
+
+## Contributing
+
+See the contribution guide at [CONTRIBUTING.md](CONTRIBUTING.md)
