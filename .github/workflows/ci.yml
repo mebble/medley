@@ -40,6 +40,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - run: yarn build
-      - run: npm publish  # https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+      - run: npm publish --access=public  # https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
