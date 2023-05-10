@@ -1,5 +1,5 @@
 {
-  "name": "medley",
+  "name": "@mebble/medley",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/medley.umd.cjs",
@@ -30,5 +30,5 @@
     "type": "git",
     "url": "https://github.com/mebble/medley.git"
   },
-  "author": "Neil Syiemlieh"
+  "license": "MIT"
 }

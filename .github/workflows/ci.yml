@@ -1,9 +1,12 @@
 name: CI
 
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushbranchestagsbranches-ignoretags-ignore
 on:
   push:
     branches:
       - main
+    tags:
+      - v*.*.*
   pull_request:
     branches:
       - main
@@ -12,11 +15,12 @@ jobs:
   test-node:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: '18.x'  # https://vitejs.dev/guide/#scaffolding-your-first-vite-project
+          registry-url: 'https://registry.npmjs.org'
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
@@ -26,6 +30,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-build-
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn install --frozen-lockfile
       - run: yarn test --reporter verbose
       - run: yarn build
+
+  publish-npm:
+    needs: test-node
+    if: startsWith(github.ref, 'refs/tags/v')  # https://github.com/orgs/community/discussions/25911
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: npm publish  # https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
