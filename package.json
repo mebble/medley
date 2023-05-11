@@ -1,12 +1,13 @@
 {
   "name": "@mebble/medley",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "main": "./dist/medley.umd.cjs",
   "module": "./dist/medley.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/medley.js",
       "require": "./dist/medley.umd.cjs"
     }
