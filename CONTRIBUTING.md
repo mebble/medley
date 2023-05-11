@@ -33,10 +33,11 @@ Then commit the changes
 
 ## Publish the package
 
-First, push all changes on the main branch. Then tag the latest commit with the new bumped version, prefixed with "v". Then push that tag:
+First, commit and tag the latest commit with the new bumped version, prefixed with "v". Then push all changes on the main branch, and then push the tag:
 
 ```
-git push
+git commit
 git tag v<new-version>
+git push
 git push origin v<new-version>
 ```
