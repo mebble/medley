@@ -5,13 +5,33 @@
 
 ## Installation
 
-Use any one of the following package managers:
+### Using a package manager
+
+Install with any one of the following package managers:
 
 ```
 npm install @mebble/medley
 yarn add @mebble/medley
 pnpm add @mebble/medley
 ```
+
+### Using a CDN
+
+If your JS code is placed within a `<script type="module">`, you can import as an ES module from a CDN:
+
+```html
+<script type="module">
+    import medley from 'https://esm.sh/@mebble/medley';
+</script>
+```
+
+Alternatively, you can import the bundle:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@mebble/medley@latest/dist/index.umd.js"></script>
+```
+
+Here, the library will be available as the global variable `medley`.
 
 ## Usage
 
