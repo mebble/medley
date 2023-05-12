@@ -1,6 +1,6 @@
-type UnitConfig     = { type: 'unit',     name: string, duration: number, tags?: string[] }
-type SequenceConfig = { type: 'sequence', tags?: string[], of: TimerConfig[] }
-type LoopConfig     = { type: 'loop',     times: number, tags?: string[], of: TimerConfig }
+export type UnitConfig     = { type: 'unit',     name: string, duration: number, tags?: string[] }
+export type SequenceConfig = { type: 'sequence', tags?: string[], of: TimerConfig[] }
+export type LoopConfig     = { type: 'loop',     times: number, tags?: string[], of: TimerConfig }
 export type TimerConfig  = UnitConfig | SequenceConfig | LoopConfig
 
 export type TimerStatus = 'off' | 'on';
@@ -10,7 +10,7 @@ export type SequenceState = { type: 'sequence', status: TimerStatus, current: nu
 export type LoopState     = { type: 'loop',     status: TimerStatus, iteration: number, of: TimerState }
 export type TimerState = UnitState | SequenceState | LoopState
 
-type TargetUnit =
+export type TargetUnit =
     | { type: 'tick', id: string, remaining: number }
     | { type: 'done', id: string }
 

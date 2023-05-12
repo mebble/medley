@@ -78,6 +78,8 @@ Here, the library will be available as the global variable `medley`.
 
 ## API Reference
 
+The API reference is available on the [website](https://mebble.github.io/medley).
+
 ## Contributing
 
-See the contribution guide at [CONTRIBUTING.md](CONTRIBUTING.md)
+See the contribution guide at [CONTRIBUTING.md](CONTRIBUTING.md).
