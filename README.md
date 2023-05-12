@@ -3,6 +3,49 @@
 [![CI Status](https://github.com/mebble/medley/workflows/CI/badge.svg)](https://github.com/mebble/medley/actions)
 [![NPM](https://img.shields.io/npm/v/@mebble/medley?logo=npm&labelColor=000&color=555)](https://www.npmjs.com/package/@mebble/medley)
 
+## Table of Contents
+
+- [Usage](#usage)
+- [Installation](#installation)
+    * [Using a package manager](#using-a-package-manager)
+    * [Using a CDN](#using-a-cdn)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+
+## Usage
+
+```typescript
+import { MedleyConfig, startTimer } from "@mebble/medley";
+
+const config: MedleyConfig = {
+    name: 'Shoulder stretches',
+    timer: {
+        type: 'sequence',
+        of: [{
+            type: 'loop',
+            times: 2,
+            of: {
+                type: 'sequence',
+                of: [
+                    { type: 'unit', name: 'Left shoulder', duration: 30 },
+                    { type: 'unit', name: 'Rest', duration: 10 },
+                    { type: 'unit', name: 'Right shoulder', duration: 30 },
+                    { type: 'unit', name: 'Rest', duration: 10 },
+                ]
+            }
+        }, {
+            type: 'unit',
+            name: 'Rest',
+            duration: 30
+        }]
+    }
+};
+
+startTimer(config, event => {
+    console.log(event)
+});
+```
+
 ## Installation
 
 ### Using a package manager
@@ -32,8 +75,6 @@ Alternatively, you can import the bundle:
 ```
 
 Here, the library will be available as the global variable `medley`.
-
-## Usage
 
 ## API Reference
 

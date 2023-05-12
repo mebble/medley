@@ -1,13 +1,13 @@
-type UnitConfig     = { type: 'unit',     name: string, duration: number, tags: string[] }
-type SequenceConfig = { type: 'sequence', tags: string[], inners: TimerConfig[] }
-type LoopConfig     = { type: 'loop',     times: number, tags: string[], inner: TimerConfig }
+type UnitConfig     = { type: 'unit',     name: string, duration: number, tags?: string[] }
+type SequenceConfig = { type: 'sequence', tags?: string[], of: TimerConfig[] }
+type LoopConfig     = { type: 'loop',     times: number, tags?: string[], of: TimerConfig }
 export type TimerConfig  = UnitConfig | SequenceConfig | LoopConfig
 
 export type TimerStatus = 'off' | 'on';
 
 export type UnitState     = { type: 'unit',     status: TimerStatus, id: string, remaining: number }
-export type SequenceState = { type: 'sequence', status: TimerStatus, current: number, inners: TimerState[] }
-export type LoopState     = { type: 'loop',     status: TimerStatus, iteration: number, inner: TimerState }
+export type SequenceState = { type: 'sequence', status: TimerStatus, current: number, of: TimerState[] }
+export type LoopState     = { type: 'loop',     status: TimerStatus, iteration: number, of: TimerState }
 export type TimerState = UnitState | SequenceState | LoopState
 
 type TargetUnit =
@@ -33,3 +33,14 @@ export interface Timer<T extends TimerState> {
     stop(): void;
     pause(): void;
 }
+
+export type MedleyEvent = TimerEvent & {
+    state: TimerState
+}
+
+export type MedleyConfig = {
+    name: string,
+    timer: TimerConfig,
+}
+
+export type MedleyHandler = (e: MedleyEvent) => void

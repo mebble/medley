@@ -98,7 +98,7 @@ export class Sequence implements Timer<SequenceState> {
             type: 'sequence',
             status: this.status,
             current: this.current,
-            inners: this.innerTimers.map(t => t.state())
+            of: this.innerTimers.map(t => t.state())
         }
     }
 
@@ -160,7 +160,7 @@ export class Loop implements Timer<LoopState> {
             type: 'loop',
             status: this.status,
             iteration: this.iteration(),
-            inner: this.innerTimer.state(),
+            of: this.innerTimer.state(),
         }
     }
 

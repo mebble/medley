@@ -15,13 +15,13 @@ describe('createTimer', () => {
         const config: TimerConfig = {
             type: 'sequence',
             tags: [],
-            inners: [
+            of: [
                 { type: 'unit', name: 'first', duration: 5, tags: [] },
                 {
                     type: 'loop',
                     times: 2,
                     tags: [],
-                    inner: { type: 'unit', name: 'second', duration: 3, tags: [] }
+                    of: { type: 'unit', name: 'second', duration: 3, tags: [] }
                 }
             ]
         }
