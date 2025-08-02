@@ -15,31 +15,41 @@ jobs:
   test-node:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18.x'  # https://vitejs.dev/guide/#scaffolding-your-first-vite-project
           registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - run: yarn test --reporter verbose
-      - run: yarn build
+        run: pnpm install --frozen-lockfile
+      - run: pnpm test --reporter verbose
+      - run: pnpm build
 
   publish-npm:
     needs: test-node
     if: startsWith(github.ref, 'refs/tags/v')  # https://github.com/orgs/community/discussions/25911
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - run: yarn build
+        run: pnpm install --frozen-lockfile
+      - run: pnpm build
       - run: npm publish --access=public  # https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -50,12 +60,19 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - run: yarn docs
+        run: pnpm install --frozen-lockfile
+      - run: pnpm docs
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@v4
         with:
