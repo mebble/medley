@@ -3,7 +3,7 @@ import { test, expect, describe, vi, beforeEach, Mock } from 'vitest';
 import { CoreTimerEventHandler, webApiCountdown } from './core';
 
 describe('webApiCountdown', () => {
-    let callback: Mock<Parameters<CoreTimerEventHandler>, ReturnType<CoreTimerEventHandler>>;
+    let callback: Mock<CoreTimerEventHandler>;
 
     beforeEach(() => {
         vi.useFakeTimers();

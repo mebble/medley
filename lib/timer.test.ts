@@ -5,10 +5,10 @@ import { Timer, TimerEventHandler, TimerState } from './types';
 import { Loop, Sequence, Unit } from './timer';
 import { TimeIt } from './core';
 
-type MockTimerEventHandler = Mock<Parameters<TimerEventHandler>, ReturnType<TimerEventHandler>>;
+type MockTimerEventHandler = Mock<TimerEventHandler>;
 
 describe('Unit', () => {
-    let inner: Mock<Parameters<TimeIt>, ReturnType<TimeIt>>;
+    let inner: Mock<TimeIt>;
     let callback: MockTimerEventHandler;
 
     beforeEach(() => {

@@ -5,7 +5,7 @@ import { Sequence, Unit, Loop } from './timer';
 import { TimeIt } from './core';
 
 describe('createTimer', () => {
-    let coreTimer: Mock<Parameters<TimeIt>, ReturnType<TimeIt>>;
+    let coreTimer: Mock<TimeIt>;
 
     beforeEach(() => {
         coreTimer = vi.fn()
