@@ -20,6 +20,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test:watch": "vitest",
+    "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test": "vitest run",
     "docs": "typedoc lib/index.ts --out ./docs"
   },
@@ -29,7 +30,7 @@
     "typescript": "^4.9.3",
     "vite": "^4.2.0",
     "vite-plugin-dts": "^2.3.0",
-    "vitest": "^0.30.1"
+    "vitest": "^3.2.4"
   },
   "repository": {
     "type": "git",

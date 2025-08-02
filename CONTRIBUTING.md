@@ -21,6 +21,18 @@ pnpm test --reporter verbose
 pnpm test:watch
 ```
 
+## Debugging tests
+
+Run the debugger through vitest like so:
+
+```
+pnpm test:debug
+```
+
+Then connect to the debugger from your browser or IDE.
+
+For more info on debugging vitest, see [the vitest docs](https://vitest.dev/guide/debugging.html).
+
 ## Bump the package version
 
 ```
