@@ -5,28 +5,28 @@ _This project was scaffolded with `yarn create vite medley --template vanilla-ts
 ## Requirements
 
 - Node v16 or later
-- yarn
+- pnpm
 
 ## Install project dependencies
 
 ```
-yarn install
+pnpm install
 ```
 
 ## Run tests
 
 ```
-yarn test
-yarn test --reporter verbose
-yarn test:watch
+pnpm test
+pnpm test --reporter verbose
+pnpm test:watch
 ```
 
 ## Bump the package version
 
 ```
-yarn version --no-git-tag-version --patch
-yarn version --no-git-tag-version --minor
-yarn version --no-git-tag-version --major
+pnpm version patch --no-git-tag-version
+pnpm version minor --no-git-tag-version
+pnpm version major --no-git-tag-version
 ```
 
 Then commit the changes
